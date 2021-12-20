@@ -17321,7 +17321,7 @@ function onwrite(stream, er) {
 function afterWrite(stream, state, finished, cb) {
   if (!finished) onwriteDrain(stream, state);
   state.pendingcb--;
-  cb();
+  cb && cb();
   finishMaybe(stream, state);
 }
 
