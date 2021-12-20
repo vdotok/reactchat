@@ -35,7 +35,7 @@ class SenderInput extends Component {
     console.log("attachmentpicked==>", e.target.files[0]);
     if (e.target.files[0].size > 6000000) {
       toast.dismiss();
-      toast.error("File size must not be larger than 1 MB", {
+      toast.error("File size must not be larger than 6 MB", {
         position: "top-right",
         transition: Zoom,
         theme: "light",
