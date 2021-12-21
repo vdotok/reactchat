@@ -222,7 +222,7 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
             return this.emit("authentication_error", { message: `SDK is not authorized.` });
         Client.consoleLog("hostString===", hostString, this.Username, " ===password=== ", this.Password);
         //wss://vte2.vdotok.com:443
-        const client = connect(hostString, { username: username, password: password });
+        const client = connect(hostString, { username: username, password: password,keepAlive:5 });
         this.Connection = client;
         /***
          * Set CallBacks
@@ -240,7 +240,7 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
                     this.emit("create", JsonPacket);
                 }
                 else {
-                    this.SetMessagePacket(JsonPacket);
+                    this.SetMessagePacket(JsonPacket,client);
                 }
             }
             catch (e) {
@@ -488,7 +488,7 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
     /**
      * @private method
      */
-    SetMessagePacket(JsonPacket) {
+    SetMessagePacket(JsonPacket,ins) {
         let isFile = false;
         const isFileHeader = _Services_FileMessage__WEBPACK_IMPORTED_MODULE_1__["default"].MapHeaderPacket(JsonPacket);
         const isFileMessage = _Services_FileMessage__WEBPACK_IMPORTED_MODULE_1__["default"].MapFileMessagePacket(JsonPacket);
@@ -506,7 +506,12 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
             // Client.consoleLog("isFileHeader Files",files);
             if (files != undefined) {
                 const newContent = files.Content;
+                if(ins){
+          ins._sendPacket({ cmd: "pingreq" });
+          
+                }
                 files.Content = newContent.concat(JsonPacket.content);
+
                 this.QueueFiles[JsonPacket.headerId] = Object.assign({}, files);
                 //Client.consoleLog("isFileHeader isJsonPacket",JsonPacket,files.Header.totalPacket==JsonPacket.packetNo);
                 if (files.Header.totalPacket == JsonPacket.packetNo) {
@@ -1092,7 +1097,7 @@ class File {
             let fileSize = binArray.length;
             let newParams = Object.assign(Object.assign(Object.assign({}, params), fileOjbect), { size: fileSize });
             let chunkArray = [];
-            let limit = 12000; //if we use 2000 limit it gives currpt file
+            let limit = 9000; //if we use 2000 limit it gives currpt file
             if (fileSize > limit) {
                 chunkArray = Object(_Helpers_ArrayHelper__WEBPACK_IMPORTED_MODULE_0__["MakeChunkArray"])(binArray, limit);
                 newParams.totalPacket = chunkArray.length;
@@ -13240,7 +13245,6 @@ function connect (packet, stream, opts) {
   var password = settings.password
   /* mqtt5 new oprions */
   var properties = settings.properties
-
   if (clean === undefined) clean = true
 
   var length = 0
