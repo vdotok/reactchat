@@ -58,7 +58,7 @@ class Signup extends Component {
         device_model:"iPhone 8",
         device_os_ver:"13.3",
         app_version:"1.1.5 (269)",
-        project_id: "125YLEY1"
+        project_id: "176GK5IN"
     }
     console.log('api call');
       User.signup(data).then(res=>{

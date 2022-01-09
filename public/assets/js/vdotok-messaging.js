@@ -211,6 +211,7 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
      * Connetion with server and user registeration
      */
     Register(username, password) {
+      console.log('jj in register');
         this.Username = username;
         this.Password = password;
         /**
@@ -222,13 +223,16 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
             return this.emit("authentication_error", { message: `SDK is not authorized.` });
         Client.consoleLog("hostString===", hostString, this.Username, " ===password=== ", this.Password);
         //wss://vte2.vdotok.com:443
-        const client = connect(hostString, { username: username, password: password,keepAlive:5 });
+        console.log('jj connect',);
+        const client = connect(hostString, { username: username, password: password });
+        
         this.Connection = client;
+        client._checkPing()
         /***
          * Set CallBacks
          */
         client.on('message', (topic, message, packet) => {
-            //console.log('on MessagePacket', packet, "====Received-====message", message.toString());
+            console.log('on MessagePacket', packet, "====Received-====message", message.toString());
             //{"time":1604670380,"event":"status","channel":"3927/","who":[{"id":"FJDE5NXLZ2SDWL7PXSQYUHXUHM"}]}
             try {
                 let JsonPacket = JSON.parse(message.toString());
@@ -261,7 +265,7 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
             //Client.consoleLog('on packetreceive',data);
         });
         client.on('presence', (data) => {
-            // Client.consoleLog('on presence',data);
+            Client.consoleLog('on presence',data);
         });
         client.on('disconnect', (data) => {
             this.emit("disconnect", data);
@@ -401,7 +405,7 @@ class Client extends events__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"] {
      * @private method for emitting file message
      */
     async SetFileMessage(files, packet) {
-        //Client.consoleLog("QueuFiles==",this.QueueFiles);
+        Client.consoleLog("QueuFiles==",files, packet);
         const message = _Modals_MessageSchema__WEBPACK_IMPORTED_MODULE_5__["default"];
         // message.content=files.Content;
         message.type = files.Header.type;
@@ -1801,7 +1805,7 @@ function BufferToBase64Async(buffer, ext) {
 }
 function ArrayBase64ToStringBase64Async(buffer, ext) {
     return new Promise((resolve, reject) => {
-        console.log("completeFile buffer: ", buffer);
+        console.log("completeFile buffer: ", buffer,ext);
         let base64 = buffer.join("");
         ext = ext.toLowerCase();
         let mimeType = _Modals_FileExtensionSchema__WEBPACK_IMPORTED_MODULE_0__["default"][ext];
@@ -4204,6 +4208,7 @@ function nop (error) {
  * (see Connection#connect)
  */
 function MqttClient (streamBuilder, options) {
+  console.log('jj mqtt');
   var k
   var that = this
 
@@ -4280,6 +4285,7 @@ function MqttClient (streamBuilder, options) {
 
   // Send queued packets
   this.on('connect', function () {
+    console.log('jj mqtt connected',this.queue);
     var queue = this.queue
 
     function deliver () {
@@ -4292,6 +4298,7 @@ function MqttClient (streamBuilder, options) {
       }
 
       packet = entry.packet
+      // console.log('jj packet',that,packet);
       debug('deliver :: call _sendPacket for %o', packet)
       that._sendPacket(
         packet,
@@ -4310,6 +4317,7 @@ function MqttClient (streamBuilder, options) {
 
   this.on('close', function () {
     debug('close :: connected set to `false`')
+    console.log('jj close',this.queue);
     this.connected = false
 
     debug('close :: clearing connackTimer')
@@ -4337,6 +4345,7 @@ inherits(MqttClient, EventEmitter)
  * @api private
  */
 MqttClient.prototype._setupStream = function () {
+  console.log('jj');
   var connectPacket
   var that = this
   var writable = new Writable()
@@ -4417,6 +4426,7 @@ MqttClient.prototype._setupStream = function () {
   debug('_setupStream: sending packet `connect`')
   connectPacket = Object.create(this.options)
   connectPacket.cmd = 'connect'
+  console.log('pangaa');
   // avoid message queue
   sendPacket(this, connectPacket)
 
@@ -4442,12 +4452,14 @@ MqttClient.prototype._setupStream = function () {
 
   clearTimeout(this.connackTimer)
   this.connackTimer = setTimeout(function () {
+    console.log('jj');
     debug('!!connectTimeout hit!! Calling _cleanUp with force `true`')
     that._cleanUp(true)
   }, this.options.connectTimeout)
 }
 
 MqttClient.prototype._handlePacket = function (packet, done) {
+  // console.log('jj pacekt',packet, done);
   var options = this.options
 
   if (options.protocolVersion === 5 && options.properties && options.properties.maximumPacketSize && options.properties.maximumPacketSize < packet.length) {
@@ -4980,6 +4992,7 @@ MqttClient.prototype.reconnect = function (opts) {
  * @api privateish
  */
 MqttClient.prototype._reconnect = function () {
+  console.log('jj reconnect called again');
   debug('_reconnect: emitting reconnect to client')
   this.emit('reconnect')
   debug('_reconnect: calling _setupStream')
@@ -5001,6 +5014,7 @@ MqttClient.prototype._setupReconnect = function () {
     }
     debug('_setupReconnect :: setting reconnectTimer for %d ms', that.options.reconnectPeriod)
     that.reconnectTimer = setInterval(function () {
+      console.log('jj jj');
       debug('reconnectTimer :: reconnect triggered!')
       that._reconnect()
     }, that.options.reconnectPeriod)
@@ -5014,6 +5028,7 @@ MqttClient.prototype._setupReconnect = function () {
  */
 MqttClient.prototype._clearReconnect = function () {
   debug('_clearReconnect : clearing reconnect timer')
+  console.log('panga reconnect');
   if (this.reconnectTimer) {
     clearInterval(this.reconnectTimer)
     this.reconnectTimer = null
@@ -5209,6 +5224,7 @@ MqttClient.prototype._handlePingresp = function () {
  * @api private
  */
 MqttClient.prototype._handleConnack = function (packet) {
+  console.log('jj handle');
   debug('_handleConnack')
   var options = this.options
   var version = options.protocolVersion

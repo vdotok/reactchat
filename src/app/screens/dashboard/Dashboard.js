@@ -62,7 +62,7 @@ handleResize=()=>{
     //   secret: "cWV91camkwd99XO9rvHmamvXxGdyeHK5",
     // };
 var Client = new MVDOTOK.Client({
-  projectID: "125YLEY1",
+  projectID: "176GK5IN",
   secret: "3d9686b635b15b5bc2d19800407609fa",
   host: `${this.props.user.messaging_server_map.protocol}://${this.props.user.messaging_server_map.host}:${this.props.user.messaging_server_map.port}`
 });
@@ -360,9 +360,7 @@ var Client = new MVDOTOK.Client({
           currentmsgsAray[indexx]["loading"] = false;
           msgobj[res.to] = [...currentmsgsAray];
           this.props.manageAllMessages({ ...msgobj });
-          msgobj[res.to] = [...currentmsgsAray];
-          msgobj[res.to] = [...currentmsgsAray];
-          this.props.manageAllMessages({ ...msgobj });
+        
         }
 
       }
@@ -379,7 +377,7 @@ var Client = new MVDOTOK.Client({
         if (res.data.status === 200) {
           let grpsToSubscribe = [];
           let manageOnlineObj = {};
-          let allRoomsMessages = {};
+          let allRoomsMessages = this.props.allRoomsMessages;
           let typingObj = {};
           let newArrayOfGroups=[]
 
@@ -400,7 +398,7 @@ var Client = new MVDOTOK.Client({
             }
           });
             this.props.manageOnlineUsers(manageOnlineObj);
-            this.props.manageAllMessages(allRoomsMessages);
+            this.props.manageAllMessages({...allRoomsMessages});
             this.props.manageTypingUsers(typingObj);
 
             this.subscribeChannels(grpsToSubscribe);

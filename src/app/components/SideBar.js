@@ -988,7 +988,7 @@ class SideBar extends Component {
                     <div className="chatListContainer noHorizontalPadding">
                       {this.props.groups.map((item, index) => {
                         let length =
-                          this.props.onlineUsers[item.channel_name].length || 0;
+                          this.props.onlineUsers[item.channel_name].filter(u=>u.username !== this.props.user.ref_id).length || 0;
 
                         let unreadmsgs =
                           this.props.allRoomsMessages[item.channel_name].filter(
@@ -1171,17 +1171,17 @@ class SideBar extends Component {
 
                               {item.auto_created == 0 ? (
                                 <p className="cardOnlineStatus">
-                                  {length}/{item.participants.length} Online
+                                  {length+1}/{item.participants.length} Online
                                 </p>
                               ) : (
                                 <p
                                   className={
-                                    length > 1
+                                    length > 0
                                       ? "cardOnlineStatus"
                                       : "cardOfflineStatus"
                                   }
                                 >
-                                  {length > 1 ? "Online" : "offline"}
+                                  {length > 0 ? "Online" : "offline"}
                                 </p>
                               )}
                             </div>

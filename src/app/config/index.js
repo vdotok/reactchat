@@ -1,1 +1,1 @@
-export const API_URL="https://stenant.vdotok.dev/API/v0/"
+export const API_URL="https://tenant-api.vdotok.dev/API/v0/"
